@@ -82,6 +82,9 @@ with DAG(
         conn = hook.get_conn()
         cursor = conn.cursor()
 
+        # start transaction
+        cursor.execute("BEGIN")
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS COUNTRY_CAPITALS (
                 COUNTRY STRING,
@@ -89,15 +92,19 @@ with DAG(
             )
         """)
 
+        # full refresh
+        cursor.execute("DELETE FROM COUNTRY_CAPITALS")
+
         for country, capital in records:
             cursor.execute(
                 "INSERT INTO COUNTRY_CAPITALS (COUNTRY, CAPITAL) VALUES (%s, %s)",
                 (country, capital)
             )
 
-        conn.commit()
+        # commit transaction
+        cursor.execute("COMMIT")
 
-        print("Loaded records into Snowflake")
+        print("Full refresh completed")
 
         return "DONE"
 
