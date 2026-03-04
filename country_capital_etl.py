@@ -93,7 +93,7 @@ with DAG(
         """)
 
         # full refresh
-        cursor.execute("DELETE FROM COUNTRY_CAPITALS")
+        cursor.execute("TRUNCATE TABLE COUNTRY_CAPITALS")
 
         for country, capital in records:
             cursor.execute(
